@@ -13,11 +13,15 @@ export const reqAddress = (longitude,latitude)=>ajax({
     url: `/position/${latitude},${longitude}`
 })
 /* 获取食品分类列表 */
-export default reqCategory = () => ajaxs('/index_category')
+export const reqCategorys = () => ajax('/index_category')
 /* 
   根据经纬度获取商铺列表
 */
-export default reqShops=()=>ajax({
+export const reqShops = ({longitude, latitude}) => ajax({
    method:'GET',
-   url:'/shops'
+   url:'/shops',
+   params:{
+     latitude,
+     longitude
+   }
 })

@@ -1,6 +1,6 @@
 <template>
 <section class="msite">
-    <Header title="松江区大江大厦6楼" >
+    <Header :title="address.name||'正在定位中'" >
       <span class="header_search" slot="left">
         <i class="iconfont icon-sousuo"></i>
       </span>
@@ -10,111 +10,22 @@
     </Header>
     <!--首页导航-->
     <nav class="msite_nav">
-      <div class="swiper-container">
+      <div class="swiper-container" v-if="categorys.length">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
+          <div class="swiper-slide"  v-for="(categorys,index) in categorysArr" :key='index'>
+            <a href="javascript:" class="link_to_food" v-for="(category,index) in categorys" :key="index">
               <div class="food_container">
-                <img src="./images/nav/1.jpg">
+                <img :src="'https://fuss10.elemecdn.com' + category.image_url"/>
               </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/3.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/4.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/5.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/6.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/7.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/8.jpg">
-              </div>
-              <span>土豪推荐</span>
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/9.jpg">
-              </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/10.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/11.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/12.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/13.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/14.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/1.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{category.title}}</span>
             </a>
           </div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
+      </div>
+      <div v-else>
+           <img src="./images/msite_back.svg" alt="back">
       </div>
     </nav>
      <ShopList/>
@@ -122,12 +33,61 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import chunk from "lodash/chunk"
+  import {mapState} from "vuex"
   import ShopList from '../../components/ShopList/ShopList'
+  import Swiper from 'swiper'
+  import 'swiper/css/swiper.min.css'
   export default {
     components:{
        ShopList
-     }
-  }
+     },
+     computed:{
+       ...mapState(['address', 'categorys']),
+       categorysArr(){
+         const {categorys}=this   //返回一个包含拆分区块的新数组（相当于一个二维数组）
+                          //  array (Array): 需要处理的数组 
+                          // [size=1] (number): 每个数组区块的长度 
+         return  chunk(categorys,8)
+       }
+     },
+      mounted(){
+       //异步获取分类列表到vuex的state
+        // await this.$store.dispatch('getCategory')  // dispatch()返回的promise在状态更新且界面更新后才成功
+        this.$store.dispatch('getCategory',()=>{
+          this.$nextTick(()=>{
+                new Swiper ('.swiper-container', {
+                   loop: true, // 循环模式选项    
+                  // 如果需要分页器
+                    pagination: {
+                    el: '.swiper-pagination',
+                    },
+                  })    
+          })
+        })
+     
+      }        
+      // watch:{
+      //   categorys(){
+      //     this.$nextTick(()=>{
+      //         new Swiper ('.swiper-container', {
+      //   loop: true, // 循环模式选项    
+      //   // 如果需要分页器
+      //   pagination: {
+      //     el: '.swiper-pagination',
+      //   },
+      // }) 
+    // })
+        // }
+      // }
+  }   
+    /*   
+  解决swiper异步轮播的bug
+  1. watch + nectTick()
+  2. callback + nextTick()
+  3. 利用dispatch()返回的promise
+  
+  */
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>

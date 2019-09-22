@@ -1,6 +1,9 @@
 /* 封装axios */
 import axios from 'axios'
 import qs from 'qs'
+import {Toast} from 'mint-ui'
+import store from '../vuex/store'  //得到store对象
+import router from '../router/index'
 //创建一个新的Axios的实例
 const instance=axios.create({
     timeout:10000,            //如果10s之后不返回，那么就会进入失败的回调
@@ -13,6 +16,15 @@ instance.interceptors.request.use((config)=>{
     if(config.method.toUpperCase()==='POST'&&config.data instanceof Object){
          config.data=qs.stringify(config.data) 
     }
+     //处理token
+    const token=store.state.token
+    if(config.headers.needToken){
+       if (token) {
+           config.headers['Authorization'] = token // 如果token存在, 将token添加到请求头中
+       }else{
+        throw new Error('没有token,不能请求')        //中断promise ,进入失败的回调
+    }
+ }  
     return config
 })
 
@@ -25,10 +37,33 @@ instance.interceptors.request.use((config)=>{
     instance.interceptors.response.use(response=>{
        return response.data
     },error=>{
-       alert(error.message)
+       //没有token直接发请求错误
+    // 发请求前的异常
+    if (!error.response) {
+           // 发需要授权的请求前发现没有token(没有登陆)
+            // 如果当前没在登陆界面
+            if (router.currentRoute.path !== '/login') {
+                router.replace('/login')
+                Toast(error.message)
+            }
+        // 发请求后的异常
+      } else {
+        const status = error.response.status
+        if (status === 401) { // 授权过期
+            if (router.currentRoute.path !== '/login') {
+                // 退出登陆
+                store.dispatch('logout')
+                router.replace('/login')
+                Toast(error.response.data.message)
+            }
+        } else if (status === 404) {
+            Toast('请求的资源不存在')
+        } else {
+            Toast('请求异常: ' + error.message)
+        }
+    }
        return new Promise(()=>{})   //返回一个pending状态的promise
-    })
-     
+    })     
     export default instance
 
 

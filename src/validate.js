@@ -28,7 +28,7 @@ Vue.use(VeeValidate)
   VeeValidate.Validator.extend('name', {
     // 验证函数
     validate: value => {
-      return /^1\d{10}$/.test(value)
+      return /^[a-zA-Z0-9][a-zA-Z0-9]{3,16}$/.test(value)
     },
     getMessage: field => field + '必须是满足11位'
   })
@@ -36,10 +36,10 @@ Vue.use(VeeValidate)
     VeeValidate.Validator.extend('pwd', {
       // 验证函数
       validate: value => {
-        return /^1\d{7}$/.test(value)
+        return /^1\d{5}$/.test(value)
       },
       getMessage: field => field + '必须是字符串或数字'
-    }),
+    })
         // 自定义验证规则
     VeeValidate.Validator.extend('captcha', {
       // 验证函数

@@ -22,7 +22,7 @@
                  </button>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="6" placeholder="验证码" v-model="code" name="code" v-validate="{required: true,regex: /^1\d{5}$/}">
+                <input type="tel" maxlength="6" placeholder="验证码" v-model="code" name="code" v-validate="{required: true,regex: /^[0-9]\d{5}$/}">
                 <span style="color: red;" v-show="errors.has('code')">{{ errors.first('code') }}</span>
               </section>
               <section class="login_hint">
@@ -45,9 +45,15 @@
                   </div>
                 </section>
                 <section class="login_message">
-                  <input type="text" maxlength="4" placeholder="验证码" v-model="captcha" name="captcha" v-validate="'required|captcha'">
+                  <input type="text"
+                   maxlength="4" 
+                   placeholder="验证码" 
+                   v-model="captcha"
+                   name="captcha" 
+                   v-validate="'required|captcha'" 
+                  />
                   <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
-                  <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                  <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" ref="captcha"  @click="updateCaptcha">
                 </section>
               </section>
             </div>
@@ -63,7 +69,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-    
+    import {reqSendCode,reqSmsLogin,reqPwdLogin} from "../../api/index";
+    import { Toast,MessageBox } from 'mint-ui';
   export default {
     data(){
       return {
@@ -74,7 +81,7 @@
           isShowpwd:false,   //是否显示密码
           name:'',
           pwd:'',
-          captcha:''
+          captcha:'',
       }
     },
     computed:{
@@ -84,14 +91,22 @@
       }
     },
     methods:{
-      sendCode(){
+      async sendCode(){
          this.computedTime=10
           const TimeId= setInterval(() => {
             this.computedTime--
-            if(this.computedTime===0){
+            if(this.computedTime<=0){
                clearInterval(TimeId)
             }
          }, 1000);
+            const result=await reqSendCode(this.phone)
+            if(result.code===0){
+               Toast('短信发送成功')
+            }else{
+              //停止计时
+              this.computedTime=0
+              Toast(result.msg)
+            }
       },
       async login(){
         let names 
@@ -100,9 +115,37 @@
         }else{
           names=['pwd','name','captcha']
         }
-        await this.$validator.validateAll(names) // 对指定的所有表单项进行验证        
+        const success=await this.$validator.validateAll(names) // 对指定的所有表单项进行验证   
+         const {phone, code, name, pwd, captcha} = this
+        if(success){
+          //验证通过后发登录的请求
+          let result
+          if(this.loginWay){
+             result=await reqSmsLogin({phone,code})
+             this.computedTime=0
+          }else{ 
+                 result =await reqPwdLogin({name,pwd,captcha})
+              if (result.code!==0) { // 登陆失败了
+              this.updateCaptcha() // 更新图形验证码
+              this.captcha = ''
+            }
+          }
+          if(result.code===0){
+             const user=result.data
+             this.$store.dispatch('saveUser',user)
+             //跳转到个人中心
+             this.$router.replace('/profile')
+          } else{
+             MessageBox.alert(result.msg)
+          }
+           
+        }     
+      },
+      updateCaptcha () {
+        // 如何让浏览器对图片重新请求: 图片地址携带一个时间戳参数
+        this.$refs.captcha.src = 'http://localhost:4000/captcha?time='+ Date.now()
       }
-    }
+    },
   }
 </script>
 

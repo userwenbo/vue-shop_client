@@ -1,6 +1,6 @@
-import {reqAddress,reqCategorys,reqShops} from '../api'
+import {reqAddress,reqCategorys,reqShops,reqAutoLogin,reqGoods,reqInfo,reqRatings} from '../api'
 
-import {RECEIVE_ADDRESS,RECEIVE_SHOPS,RECEIVE_CATEGORYS} from './mutation-types'
+import {RECEIVE_ADDRESS,RECEIVE_SHOPS,RECEIVE_CATEGORYS,RECEIVE_USER,RECEIVE_TOKEN,LOGOUT,RECEIVE_GOODS,RECEIVE_RATINGS,RECEIVE_INFO} from './mutation-types'
 export default {
    async getAddress({commit,state},callback){
      const {longitude,latitude}=state
@@ -35,5 +35,53 @@ export default {
           commit(RECEIVE_SHOPS,{shops})
           typeof callback === 'function' && callback()
         }
-    }
+    },
+    saveUser({commit},user){
+      //将token保存到local中 
+      const token=user.token
+      localStorage.setItem('token_key', token)
+      delete user.token   //删除user的token
+      commit(RECEIVE_USER,{user})
+      commit(RECEIVE_TOKEN,{token})
+    },
+    //退出登录
+    logout({commit}){
+      //清除token
+      localStorage.removeItem('token_key')
+      commit(LOGOUT)
+    },
+    //自动登录异步action
+    async autoLogin({commit}){
+       const result=await reqAutoLogin()
+       if(result.code===0){
+          const user=result.data
+          commit(RECEIVE_USER,{user})//没有token需要
+       }
+    },
+    // 异步获取商家信息
+    async getShopInfo({commit}, cb) {
+      const result = await reqInfo()
+      if (result.code === 0) {
+        const info = result.data
+        commit(RECEIVE_INFO, {info})
+           cb && cb()
+      }
+    },
+     async getShopGoods({commit},cb){
+       const result = await reqGoods()
+       if(result.code===0){
+         const goods=result.data
+         commit(RECEIVE_GOODS,{goods})
+         cb && cb()
+       }
+     },
+    async getShopRatings({commit},cb){
+       const result = await reqRatings()
+       if(result.code===0){
+         const ratings=result.data
+         commit(RECEIVE_RATINGS,{ratings})
+         cb && cb()
+       }
+     }
+
 }

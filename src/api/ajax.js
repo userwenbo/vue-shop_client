@@ -18,13 +18,17 @@ instance.interceptors.request.use((config)=>{
     }
      //处理token
     const token=store.state.token
-    if(config.headers.needToken){
-       if (token) {
-           config.headers['Authorization'] = token // 如果token存在, 将token添加到请求头中
-       }else{
-        throw new Error('没有token,不能请求')        //中断promise ,进入失败的回调
+    //只要有token就携带给浏览器
+    if(token){
+            config.headers['Authorization'] = token // 如果token存在, 将token添加到请求头中
+    }else{
+        //如果没有token但请求需要token
+         if (config.headers.checkdToken) {
+            throw new Error('没有token,不能请求') //中断promise ,进入失败的回调
+         }
+       
     }
- }  
+                               
     return config
 })
 
@@ -42,10 +46,15 @@ instance.interceptors.request.use((config)=>{
     if (!error.response) {
            // 发需要授权的请求前发现没有token(没有登陆)
             // 如果当前没在登陆界面
-            if (router.currentRoute.path !== '/login') {
-                router.replace('/login')
-                Toast(error.message)
-            }
+           if (error.status === 401) { // 发需要授权的请求前发现没有token(没有登陆)
+               // 如果当前没在登陆界面
+               if (router.currentRoute.path !== '/login') {
+                   router.replace('/login')
+                   Toast(error.message)
+               } else {
+                   console.log('没有token, 请求前取消的请求, 已在login, 不需要跳转')
+               }
+           }
         // 发请求后的异常
       } else {
         const status = error.response.status

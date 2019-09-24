@@ -8,6 +8,7 @@ import Shop from '../pages/shop/shop.vue'
 import Goods from '../pages/shop/goods.vue'
 import Info from '../pages/shop/info.vue'
 import Ratings from '../pages/shop/ratings.vue'
+import UserInfo from '../pages/userInfo/userInfo.vue'
 export default [
    {
      path:'/msite',
@@ -40,6 +41,10 @@ export default [
    {
      path: '/login',
      component:Login,
+   },
+   {
+     path:'/userInfo',
+     component:UserInfo
    },
    {
      path:'/shop',

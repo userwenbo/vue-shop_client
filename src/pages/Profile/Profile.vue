@@ -2,7 +2,7 @@
   <section class="profile">
     <Header title="我的">
     </Header>
-    <section class="profile-number" @click="$router.push('/login')">
+    <section class="profile-number" @click="$router.push(user._id?'userInfo':'login')">
       <a href="javascript:" class="profile-link">
         <div class="profile_image">
           <i class="iconfont icon-person"></i>

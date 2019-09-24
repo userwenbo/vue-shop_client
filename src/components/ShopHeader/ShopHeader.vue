@@ -1,129 +1,133 @@
 <template>
    <div class="shop-header">
     <nav class="shop-nav"
-         style="background-image: url('https://fuss10.elemecdn.com/f/5c/ead54394c3de198d3e6d3e9111bbfpng.png');">
-      <a class="back">
-        <i class="iconfont icon-arrow_left"/>
+         :style="{backgroundImage: `url(${info.bgImg})`}">
+      <a class="back" @click="$router.back()">
+         <i class="iconfont icon-jiantou2"/>
       </a>
     </nav>
-    <div class="shop-content">
-      <img src="https://fuss10.elemecdn.com/8/40/02872ce8aefe75c16d3190e75ad61jpeg.jpeg" class="content-image">
+    <div class="shop-content" @click="isShowBulletin=true">
+      <img :src="info.avatar" class="content-image">
       <div class="header-content">
         <h2 class="content-title">
           <span class="content-tag">
             <span class="mini-tag">品牌</span>
           </span>
-          <span class="content-name">嘉禾一品（温都水城）</span>
+          <span class="content-name">{{info.name}}</span>
           <i class="content-icon"></i>
         </h2>
         <div class="shop-message">
-          <span class="shop-message-detail">5</span>
-          <span class="shop-message-detail">月售90单</span>
+          <span class="shop-message-detail">{{info.score}}</span>
+          <span class="shop-message-detail">月售{{info.sellCount}}单</span>
           <span class="shop-message-detail">
-            硅谷专送
-            <span>约28分钟</span>
+            {{info.description}}
+            <span>约{{info.deliveryTime}}分钟</span>
           </span>
-          <span class="shop-message-detail">距离1000m</span>
+          <span class="shop-message-detail">距离{{info.distance}}</span>
         </div>
-        <p class="shop-notice">是以粥为特色的中式营养快餐，自2004年10月18日创立“嘉和一品”品牌至今</p>
+        <p class="shop-notice">{{info.bulletin}}</p>
       </div>
     </div>
-    <div class="shop-header-discounts">
+    <div class="shop-header-discounts" v-if="info.supports" @click="isShowSupport=true">
       <div class="discounts-left">
-        <div class="activity activity-green">
+        <div class="activity" :class="supportClasses[info.supports[0].type]">
           <span class="content-tag">
-            <span class="mini-tag">首单</span>
+            <span class="mini-tag">{{info.supports[0].name}}</span>
           </span>
-          <span class="activity-content">新用户下单立减17元</span>
+          <span class="activity-content ellipsis">{{info.supports[0].content}}</span>
         </div>
-      </div>
+      </div> 
       <div class="discounts-right">
-        3个优惠
+             {{info.supports.length}}个优惠
       </div>
     </div>
-    <div class="shop-brief-modal" style="display: none;">
-      <div class="brief-modal-content">
-        <h2 class="content-title">
-          <span class="content-tag">
-            <span class="mini-tag">品牌</span>
-          </span>
-          <span class="content-name">嘉禾一品（温都水城）</span>
-        </h2>
-        <ul class="brief-modal-msg">
-          <li>
-            <h3>3.5</h3>
-            <p>评分</p>
-          </li>
-          <li>
-            <h3>90单</h3>
-            <p>月售</p>
-          </li>
-          <li>
-            <h3>硅谷专送</h3>
-            <p>约28分钟</p>
-          </li>
-          <li>
-            <h3>4元</h3>
-            <p>配送费用</p>
-          </li>
-          <li>
-            <h3>1000m</h3>
-            <p>距离</p>
-          </li>
-        </ul>
-        <h3 class="brief-modal-title">
-          <span>公告</span></h3>
-          <div class="brief-modal-notice">
-            是以粥为特色的中式营养快餐，自2004年10月18日创立“嘉和一品”品牌至今
+
+    <transition name="fade">
+      <div class="shop-brief-modal" v-show="isShowBulletin">
+        <div class="brief-modal-content">
+          <h2 class="content-title">
+            <span class="content-tag">
+              <span class="mini-tag">品牌</span>
+            </span>
+            <span class="content-name">{{info.name}}</span>
+          </h2>
+          <ul class="brief-modal-msg">
+            <li>
+              <h3>{{info.score}}</h3>
+              <p>评分</p>
+            </li>
+            <li>
+              <h3>{{info.sellCount}}单</h3>
+              <p>月售</p>
+            </li>
+            <li>
+              <h3>{{info.description}}</h3>
+              <p>约{{info.deliveryTime}}分钟</p>
+            </li>
+            <li>
+              <h3>{{info.deliveryPrice}}元</h3>
+              <p>配送费用</p>
+            </li>
+            <li>
+              <h3>{{info.distance}}</h3>
+              <p>距离</p>
+            </li>
+          </ul>
+          <h3 class="brief-modal-title">
+            <span>公告</span></h3>
+            <div class="brief-modal-notice">
+              {{info.bulletin}}
+            </div>
+          <div class="mask-footer" @click="isShowBulletin=false">
+            <span class="iconfont icon-close"></span>
           </div>
-        <div class="mask-footer">
-          <span class="iconfont icon-close"></span>
         </div>
+        <div class="brief-modal-cover" @click="isShowBulletin=false"></div>
       </div>
-      <div class="brief-modal-cover"></div>
-    </div>
-    <div class="activity-sheet" style="display: none;">
-      <div class="activity-sheet-content">
-        <h2 class="activity-sheet-title">
-        优惠活动</h2>
-        <ul class="list">
-          <li class="activity-item activity-green">
-            <span class="content-tag">
-              <span class="mini-tag">首单</span>
-            </span>
-            <span class="activity-content">新用户下单立减17元(不与其它活动同享)</span>
-          </li>
-          <li class="activity-item activity-red">
-            <span class="content-tag">
-              <span class="mini-tag">满减</span>
-            </span>
-            <span class="activity-content">满35减19，满65减35</span>
-          </li>
-          <li class="activity-item activity-orange">
-            <span class="content-tag">
-              <span class="mini-tag">特价</span>
-            </span>
-            <span class="activity-content">【立减19.5元】欢乐小食餐</span>
-          </li>
-        </ul>
-        <div class="activity-sheet-close">
-          <span class="iconfont icon-close"></span>
-        </div>
-      </div>
-      <div class="activity-sheet-cover"></div>
-    </div>
+    </transition>
+     <transition name="fade">
+        <div class="activity-sheet" v-show="isShowSupport">
+             <div class="activity-sheet-content">
+            <h2 class="activity-sheet-title">
+            优惠活动</h2>
+            <ul class="list">
+              <li class="activity-item" :class="supportClasses[support.type]" v-for="(support,index) in info.supports" :key="index">
+                <span class="content-tag">
+                  <span class="mini-tag">{{support.name}}</span>
+                </span>
+                <span class="activity-content">{{support.content}}</span>
+              </li>    
+            </ul>
+              <div class="activity-sheet-close">
+              <span class="iconfont icon-close" @click="isShowSupport=false"></span>
+            </div>
+          </div>
+          <div class="activity-sheet-cover" @click="isShowSupport=false"></div>
+        </div>   
+     </transition>
   </div>
 
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapState} from "vuex";
   export default {
+    data(){
+      return{
+        isShowBulletin:false,
+        isShowSupport:false,
+        supportClasses:['activity-green','activity-red','activity-orange'] //定义一个数组
+      }
+    },
+    computed:{
+      ...mapState(['info'])
+    },
+    
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
-   @import "../../assets/stylus/mixins.styl"
+  @import "../../assets/stylus/mixins.styl"
 
   .shop-header
     height 100%
@@ -149,7 +153,7 @@
         position: absolute
         top: 10px
         left: 0
-        .icon-arrow_left
+        .icon-jiantou2
           display: block
           padding: 5px
           font-size: 20px
@@ -312,6 +316,10 @@
       z-index 52
       flex-direction column
       color #333
+      &.fade-enter-active, .fade-leave-active
+         transition opacity 1s
+      &.fade-enter, .fade-leave-active-to
+         opacity 0     
       .brief-modal-cover
         position absolute
         width 100%
@@ -414,10 +422,10 @@
       width 100%
       height 100%
       z-index 99
-      &.move-enter-active, &.move-leave-active
-        transition opacity .3s
-      &.move-enter-active, &.move-leave-active
-        opacity 0
+      &.fade-enter-active, .fade-leave-active
+        transition opacity 1s
+      &.fade-enter, .fade-leave-active-to
+         opacity 0 
       .activity-sheet-content
         position absolute
         background-color #f5f5f5
@@ -492,5 +500,5 @@
         left 0
         background-color rgba(0, 0, 0, .5)
 
- 
 </style>
+

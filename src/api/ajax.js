@@ -17,7 +17,7 @@ instance.interceptors.request.use((config)=>{
          config.data=qs.stringify(config.data) 
     }
      //处理token
-    const token=store.state.token
+    const token=store.state.user.token
     //只要有token就携带给浏览器
     if(token){
             config.headers['Authorization'] = token // 如果token存在, 将token添加到请求头中
@@ -52,7 +52,7 @@ instance.interceptors.request.use((config)=>{
                    router.replace('/login')
                    Toast(error.message)
                } else {
-                   console.log('没有token, 请求前取消的请求, 已在login, 不需要跳转')
+                   Toast('没有token, 请求前取消的请求, 已在login, 不需要跳转')
                }
            }
         // 发请求后的异常

@@ -64,7 +64,9 @@
        Star
      },
      computed:{
-       ...mapState(['shops'])
+       ...mapState({
+         shops:state=>state.msite.shops
+       })
      }  
   }
 </script>

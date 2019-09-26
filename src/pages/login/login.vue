@@ -146,6 +146,16 @@
         this.$refs.captcha.src = 'http://localhost:4000/captcha?time='+ Date.now()
       }
     },
+       beforeRouteEnter(to,from,next){  //回调函数在组件创建之后执行，且会将组件对象传入
+         next((component)=>{
+           //如果已登录  自动跳到profile
+          if(component.$store.state.user.token){
+             next('/userinfo')
+          }else{
+            next()
+          }
+         })      
+       }
   }
 </script>
 

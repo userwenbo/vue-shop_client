@@ -19,7 +19,9 @@
         <li class="food-list-hook" v-for="(good) in goods" :key="good.name">
           <h1 class="title">{{good.name}}</h1>
           <ul>
-            <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods" :key="index">
+            <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods" :key="index"
+             @click="showFood(food)"
+            >
               <div class="icon">
                 <img width="57" height="57"
                      :src="food.icon">
@@ -34,7 +36,7 @@
                   <span class="now">￥{{food.price}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
-                  CartControl组件
+                   <CartControl :food="food"></CartControl>
                 </div>
               </div>
             </li>
@@ -42,23 +44,34 @@
         </li>
       </ul>
     </div>
+    <ShopCart></ShopCart>
   </div>
+   <Food :food="food" ref="food"/>
 </div>
-
+ 
 </template>
 
 <script type="text/ecmascript-6">
 import {mapState} from "vuex"
+import Food from '../../components/Food/food'
+import ShopCart from '../../components/ShopCart/ShopCart'
 import BScroll from '@better-scroll/core'
   export default {
+    components:{
+      Food,
+      ShopCart
+    },
      data(){
         return {
           scrollY:0,
           tops:[],
+          food:{},
         }
      },
       computed:{
-        ...mapState(['goods']),      //currentIndex当前分类的下标{}类名确定只是你不确定有没有
+        ...mapState({
+          goods:state=>state.shop.goods
+        }),      //currentIndex当前分类的下标{}类名确定只是你不确定有没有
         currentIndex(){
           const {scrollY,tops}=this
           const index=tops.findIndex((top,index)=>scrollY>=top && scrollY<tops[index+1])
@@ -91,7 +104,7 @@ import BScroll from '@better-scroll/core'
         initScroll(){
            //必须在列表数据显示之后
           this.leftScroll=new BScroll(this.$refs.left, {
-                
+               click:true 
           })
           this.rightScroll=new BScroll(this.$refs.right, {
                click:true,
@@ -99,7 +112,6 @@ import BScroll from '@better-scroll/core'
           })  
                    //绑定scroll监听
             this.rightScroll.on('scroll',({x,y})=>{
-                console.log('scroll()',x,y)
                 this.scrollY=Math.abs(y)
             })  
               //绑定scrollEnd监听
@@ -126,6 +138,11 @@ import BScroll from '@better-scroll/core'
              //立即将scrollY设置到相应的位置
              this.scrollY=top
              this.rightScroll.scrollTo(0,-top,500)
+          },
+          showFood(food){
+            this.food=food
+            //显示food组件界面
+            this.$refs.food.toggleShow()     //标签对象就是组件对象
           }
     }
   }
@@ -133,7 +150,6 @@ import BScroll from '@better-scroll/core'
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../assets/stylus/mixins.styl"
-
   .goods
     display: flex
     position: absolute

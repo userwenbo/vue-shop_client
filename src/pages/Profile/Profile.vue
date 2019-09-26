@@ -92,6 +92,13 @@
         <section class="profile_my_order border-1px" v-if="user._id">
           <mt-button type="danger" style="width: 100%" @click="logout">退出登录</mt-button>
         </section> 
+         <section class="profile_my_order border-1px">
+              <router-link to="/a">AAA</router-link>
+                   &nbsp;&nbsp;
+              <router-link to="/b">BBB</router-link>
+                   &nbsp;&nbsp;
+              <router-link to="/login">去登陆</router-link>
+         </section>
   </section>
   </template>
 
@@ -100,7 +107,9 @@
   import {mapState} from 'vuex'
   export default {
     computed:{
-      ...mapState(['user'])
+      ...mapState({
+        user:state=>state.user.user
+      })
     },
     methods:{
       logout(){
@@ -109,7 +118,9 @@
             //清除数据
             this.$store.dispatch('logout')
           }
-        )
+        ).catch(()=>{
+          
+        })
       }
     }
   }

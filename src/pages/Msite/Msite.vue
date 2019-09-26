@@ -43,7 +43,11 @@
        ShopList
      },
      computed:{
-       ...mapState(['address', 'categorys']),
+      //  ...mapState(['address', 'categorys'])
+       ...mapState({
+         address:state=>state.msite.address,
+         categorys:state=>state.msite.categorys
+       }),
        categorysArr(){
          const {categorys}=this   //返回一个包含拆分区块的新数组（相当于一个二维数组）
                           //  array (Array): 需要处理的数组 

@@ -26,7 +26,7 @@
       </div>
       <div class="list-content" ref="foodList">
         <ul>
-          <li class="food" v-for="(food,index) in cartFoods" :key="food.name">
+          <li class="food" v-for="(food,index) in cartFoods" :key="index">
             <span class="name">{{food.name}}</span>
             <div class="price"><span>￥10</span></div>
             <div class="cartcontrol-wrapper">

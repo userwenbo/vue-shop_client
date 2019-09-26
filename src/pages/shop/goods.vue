@@ -16,7 +16,7 @@
     </div>
     <div class="foods-wrapper" ref="right">
       <ul ref="rightUl">
-        <li class="food-list-hook" v-for="(good) in goods" :key="good.name">
+        <li class="food-list-hook" v-for="(good,index) in goods" :key="index">
           <h1 class="title">{{good.name}}</h1>
           <ul>
             <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods" :key="index"

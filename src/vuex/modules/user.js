@@ -4,9 +4,7 @@ import {
   LOGOUT,
 } from "../mutation-types";
 
-import {
-  reqAutoLogin,
-} from "../../api";
+import API2 from "../../api2";
 const state = {
   user: {}, //登录用户信息
   token: localStorage.getItem('token_key'), //登录的token标识去local里面取最新的值
@@ -38,7 +36,7 @@ const actions = {
   async autoLogin({
     commit
   }) {
-    const result = await reqAutoLogin()
+    const result = await API2.user.autoLogin()
     if (result.code === 0) {
       const user = result.data
       commit(RECEIVE_USER, {

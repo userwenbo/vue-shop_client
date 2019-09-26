@@ -69,7 +69,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import {reqSendCode,reqSmsLogin,reqPwdLogin} from "../../api/index";
+    // import {reqSendCode,reqSmsLogin,reqPwdLogin} from "../../api/index";
+    
     import { Toast,MessageBox } from 'mint-ui';
   export default {
     data(){
@@ -99,7 +100,7 @@
                clearInterval(TimeId)
             }
          }, 1000);
-            const result=await reqSendCode(this.phone)
+            const result=await this.$API2.user.sendCode(this.phone)
             if(result.code===0){
                Toast('短信发送成功')
             }else{
@@ -121,10 +122,10 @@
           //验证通过后发登录的请求
           let result
           if(this.loginWay){
-             result=await reqSmsLogin({phone,code})
+             result = await this.$API2.user.loginSms({phone, code})
              this.computedTime=0
           }else{ 
-                 result =await reqPwdLogin({name,pwd,captcha})
+             result = await this.$API2.user.loginPwd({name, pwd, captcha})
               if (result.code!==0) { // 登陆失败了
               this.updateCaptcha() // 更新图形验证码
               this.captcha = ''

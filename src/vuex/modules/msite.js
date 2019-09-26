@@ -1,5 +1,6 @@
 import {RECEIVE_ADDRESS,RECEIVE_SHOPS,RECEIVE_CATEGORYS} from "../mutation-types";
-import {reqAddress,reqCategorys,reqShops} from "../../api";
+// import {reqAddress,reqCategorys,reqShops} from "../../api";
+import API2 from '../../api2'
 const state={
   latitude: 40.10038, // 纬度
   longitude: 116.36867, // 经度
@@ -17,7 +18,8 @@ const actions = {
       latitude
     } = state
     //发ajax请求
-    const result = await reqAddress(longitude, latitude)
+    const result = await API2.msite.getAddress({longitude, latitude})
+    // console.log(result)
     //提交mutation
     if (result.code === 0) {
       const address = result.data
@@ -31,7 +33,7 @@ const actions = {
     commit
   }, callback) {
     //发ajax请求
-    const result = await reqCategorys()
+    const result = await API2.msite.getCategorys()
     //提交mutation
     if (result.code === 0) {
       const categorys = result.data
@@ -52,7 +54,7 @@ const actions = {
       latitude
     } = state
     //发ajax请求
-    const result = await reqShops({
+    const result = await API2.msite.getShops({
       longitude,
       latitude
     })

@@ -12,11 +12,15 @@ import App from './App.vue'
 import Star from './components/star/star.vue'
 import  './mock/mockServer'
 import i18n from './i18n'
+import API2 from './api2'
 
 Vue.use(VueLazyload,{
   loading
 })
 Vue.config.productionTip = false
+
+//将包含所有接口请求函数方法的对象保存到Vue原型对象上
+Vue.prototype.$API2 = API2
 
 /*注册全局组件标签 */
 Vue.component('Header',Header)

@@ -46,7 +46,8 @@
     </div>
     <ShopCart></ShopCart>
   </div>
-   <Food :food="food" ref="food"/>
+       <Food :food="food" ref="food"/>
+  
 </div>
  
 </template>
@@ -56,6 +57,7 @@ import {mapState} from "vuex"
 import Food from '../../components/Food/food'
 import ShopCart from '../../components/ShopCart/ShopCart'
 import BScroll from '@better-scroll/core'
+import {CLEAR_CART} from "../../vuex/mutation-types";
   export default {
     components:{
       Food,
@@ -85,17 +87,32 @@ import BScroll from '@better-scroll/core'
           return index
         }
       },
-      mounted(){
-      if(this.goods.length>0){
-          this.initScroll()     //切换路由，路由组件会死亡，路由组件在在访问的时候创建  
-          this.initTop()
-        }         
+      // mounted(){
+      //  if(this.goods.length>0){
+      //      this.initScroll()      //，路由组件在在访问的时候创建 数据已经有了，需要在页面显示之后执行 
+      //      this.initTop()
+      //      console.log("mounted()")
+      //   }         
+      // },
+      beforeRouteEnter(to,form,next){
+        next(component=>{
+             if(['/shop/info','/shop/rating'].indexOf(form.path)!=-1){
+                   component.initScroll()
+                   component.initTop()
+             }else{
+                 next() 
+             }      
+          })
+     
+         
+          
       },
       watch:{     //路由组件什么时候床架创建访问的时候
         goods(){
           this.$nextTick(()=>{
              this.initScroll()
              this.initTop()
+             console.log("nextTick()")
           })
         }
       },

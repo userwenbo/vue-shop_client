@@ -28,7 +28,11 @@
 </template>
 
 <script type="text/ecmascript-6">
+import CartControl from '../CartControl/CartControl'
   export default {
+    components:{
+      CartControl
+    },
     props:{
       food:Object
     },

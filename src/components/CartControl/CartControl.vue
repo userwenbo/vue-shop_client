@@ -9,17 +9,18 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { mapState } from 'vuex'
   export default {
-
     props:{
       food:Object
     },
     methods:{
       updateFoodCount(isAdd){
+        console.log("cartcontrol()")
                      //状态不应该直接更新   
          this.$store.dispatch('updateFoodCount',{isAdd,food:this.food})
       }
-    }
+    },
   }
 </script>
 
